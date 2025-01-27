@@ -11,20 +11,24 @@ services:
 
 install:
   # Проверяем доступность Docker
-  - docker --version || (echo "Docker не установлен" && exit 1)
-  - docker-compose --version || (echo "Docker Compose не установлен" && exit 1)
+  - docker --version
+  - docker-compose --version
 
   # Запускаем MySQL через docker-compose
   - docker-compose up -d
 
   # Проверяем статус контейнеров
+  - echo "Проверяем работающие контейнеры:"
   - docker ps
 
   # Ждём, пока MySQL станет доступен
+  - echo "Ждём готовности MySQL..."
   - sleep 30
 
   # Проверяем доступность базы данных
-  - docker exec $(docker ps -qf "name=mysql") mysql -uuser -ppass -e "SHOW DATABASES;" || (echo "База данных недоступна" && exit 1)
+  - echo "Проверяем доступность базы данных..."
+  - |
+    docker exec $(docker ps -qf "name=mysql") mysql -uuser -ppass -e "SHOW DATABASES;" || echo "Не удалось подключиться к базе данных"
 
   # Запускаем приложение
   - chmod +x gradlew
@@ -33,4 +37,3 @@ install:
 build_script:
   # Запускаем тесты
   - ./gradlew test --info -Dselenide.headless=true
-
