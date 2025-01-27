@@ -1,29 +1,25 @@
-image: Ubuntu  # Используем образ Ubuntu для сборки
+image: ubuntu-20.04-docker  # Специальный образ с поддержкой Docker
 
-stack: jdk 11  # Версия JDK
+stack: jdk 11  # Указываем версию JDK
 
 branches:
   only:
     - master  # Выполняем сборку только для ветки master
 
 services:
-  - docker  # Включаем сервис Docker
+  - docker  # Включаем Docker
 
 install:
   - echo "Начало сборки"
   - echo "Проверяем Docker..."
-  - docker --version || echo "Ошибка: Docker недоступен"
-  - docker-compose --version || echo "Ошибка: Docker Compose недоступен"
-
-  - echo "Проверяем рабочую директорию и файлы"
-  - pwd
-  - ls -la
+  - docker --version || (echo "Docker не установлен" && exit 1)
+  - docker-compose --version || (echo "Docker Compose не установлен" && exit 1)
 
   - echo "Запускаем Docker Compose"
-  - docker-compose up -d || echo "Ошибка: Docker Compose не запустился"
+  - docker-compose up -d || echo "Ошибка запуска Docker Compose"
 
   - echo "Состояние контейнеров Docker:"
-  - docker ps || echo "Ошибка: Контейнеры не работают"
+  - docker ps || echo "Контейнеры не работают"
 
   - echo "Ждём MySQL..."
   - sleep 30
