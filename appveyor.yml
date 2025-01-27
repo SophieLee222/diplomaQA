@@ -10,25 +10,30 @@ services:
   - docker  # Включаем сервис Docker
 
 install:
-  # Проверяем доступность Docker
-  - docker --version || (echo "Docker не установлен" && exit 1)
-  - docker-compose --version || (echo "Docker Compose не установлен" && exit 1)
-
-  # Запускаем MySQL через docker-compose
-  - docker-compose up -d
-
-  # Проверяем статус контейнеров
-  - docker ps
-
-  # Ждём, пока MySQL станет доступен
-  - sleep 30
-
-  # Проверяем доступность базы данных
-  - docker exec $(docker ps -qf "name=mysql") mysql -uuser -ppass -e "SHOW DATABASES;" || (echo "База данных недоступна" && exit 1)
-
-  # Запускаем приложение
-  - chmod +x gradlew
-  - java -jar ./artifacts/aqa-shop.jar &
+  - echo "Starting build..."
+  - docker --version
+  - docker-compose --version
+  - ls -la
+  - pwd
+#  # Проверяем доступность Docker
+#  - docker --version || (echo "Docker не установлен" && exit 1)
+#  - docker-compose --version || (echo "Docker Compose не установлен" && exit 1)
+#
+#  # Запускаем MySQL через docker-compose
+#  - docker-compose up -d
+#
+#  # Проверяем статус контейнеров
+#  - docker ps
+#
+#  # Ждём, пока MySQL станет доступен
+#  - sleep 30
+#
+#  # Проверяем доступность базы данных
+#  - docker exec $(docker ps -qf "name=mysql") mysql -uuser -ppass -e "SHOW DATABASES;" || (echo "База данных недоступна" && exit 1)
+#
+#  # Запускаем приложение
+#  - chmod +x gradlew
+#  - java -jar ./artifacts/aqa-shop.jar &
 
 build_script:
   # Запускаем тесты
