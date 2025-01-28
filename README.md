@@ -34,7 +34,6 @@
 
 - **Git** — для клонирования репозитория.
 - **Java Development Kit (JDK)** версии 11 или выше.
-- **Gradle** (опционально, если не используется встроенный wrapper).
 - **Docker** — для запуска базы данных MySQL.
 - **Интегрированная среда разработки (IDE)**, например, IntelliJ IDEA.
 
@@ -53,37 +52,23 @@
 2. **Откройте проект в IntelliJ IDEA.**
     - Запустите IntelliJ IDEA.
     - Выберите `File -> Open`, укажите папку проекта `diplomaQA`.
-    - Убедитесь, что IntelliJ IDEA определила проект как Gradle-проект (обычно это происходит автоматически). Если нет:
-        - Перейдите в меню `File -> Project Structure -> Project Settings -> Modules`.
-        - Проверьте, что в разделе "Build Tools" выбран Gradle.
-
-3. **Установите зависимости с помощью Gradle.**
-   В терминале (или в IntelliJ IDEA) выполните команду:
-   ```bash
-   ./gradlew build
-   ```
-   Для Windows используйте:
-   ```cmd
-   gradlew.bat build
-   ```
 
 4. **Запустите Docker и поднимите контейнер MySQL.**
    Убедитесь, что Docker запущен, затем выполните команду:
    ```bash
-   docker run --name mysql -e MYSQL_ROOT_PASSWORD=pass -e MYSQL_DATABASE=app -p 3306:3306 -d mysql:8
+   docker-compose up
    ```
-    - `MYSQL_ROOT_PASSWORD=pass` — задает пароль для root-пользователя.
-    - `MYSQL_DATABASE=app` — имя базы данных.
+   Дождитесь запуска mysql контейнера. В последней строке логов в терминале будет прописано: _Plugin ready for connections_
 
 5. **Запустите приложение.**
    В соседнем терминале выполните команду:
    ```bash
-   java -jar aqa-shop.jar
+   java -jar ./artifacts/aqa-shop.jar
    ```
    Приложение будет доступно по адресу [http://localhost:8080](http://localhost:8080).
 
 6. **Запустите тесты.**
-   Для запуска всех тестов выполните команду:
+   Для запуска всех тестов в соседнем терминале выполните команду:
    ```bash
    ./gradlew test
    ```
@@ -91,8 +76,9 @@
    ```cmd
    gradlew.bat test
    ```
-
-### Замечания для разных операционных систем
-
-- **Windows:** Для выполнения команд Gradle используйте `gradlew.bat` вместо `./gradlew`.
-- **Mac/Linux:** Все команды указаны для bash-терминала и должны работать без изменений.
+   
+7. **Завершите работу**
+   В соседнем терминале выполните команду:
+   ```bash
+   docker-compose down
+   ```
