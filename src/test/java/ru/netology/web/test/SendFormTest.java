@@ -87,7 +87,6 @@ public class SendFormTest {
             fail("Уведомление об ошибке операции не было отображено, но статус операции в БД верный");
         }
     }
-    //почему-то появляется уведомление об успешной операции - should not pass? - заводить issue?
 
     @Test
     @DisplayName("Should Display Wrong Card Format Error")
@@ -112,7 +111,6 @@ public class SendFormTest {
     void shouldGetWrongOwnerFormatError() {
         formPage.fillInvalidOwnerForm();
     }
-    //почему-то формочка успешно отправляется - should not pass? - заводить issue?
 
     @Test
     @DisplayName("Should Display Wrong CVC Format Error")
@@ -125,7 +123,6 @@ public class SendFormTest {
     void shouldGetExpiredMonthError() {
         formPage.fillExpiredMonthFormAndCheckError();
     }
-    //тест должен падать, тк ошибка действительно не появляется для приложения
 
     @Test
     @DisplayName("Should Display Expired Year Error")
