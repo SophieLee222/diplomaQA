@@ -11,8 +11,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
+import ru.netology.web.data.SqlHelper;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SendFormApiTest {
@@ -28,42 +30,27 @@ public class SendFormApiTest {
     @Test
     @DisplayName("Should receive APPROVED status")
     void shouldGetApprovedStatus() {
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-
-        Response response = RestAssured.given()
-                .baseUri("http://localhost:8080")
-                .header("Content-Type", "application/json")
-                .body(validUser) // Передаём изменённый JSON
-                .post("/api/v1/pay")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-        // Извлекаем статус из ответа
-        String status = response.jsonPath().getString("status");
-
-        // Проверяем, что статус равен "APPROVED"
-        assertEquals("APPROVED", status, "Expected status to be 'APPROVED'");
+        // проверяем статусы апи и базы данных
+        assertAll("Checking APPROVED status from API and DB",
+                () -> assertEquals("APPROVED", DataHelper.getApprovedStatus(),
+                        "Expected API status to be 'APPROVED'"),
+                () -> assertEquals("APPROVED", SqlHelper.getStatus(),
+                        "Expected DB status to be 'APPROVED'")
+        );
+        SqlHelper.cleanTransactions();
     }
+
 
     @Test
     @DisplayName("Should receive DECLINED status")
     void shouldGetDeclinedStatus() {
-        DataHelper.CardInfo declinedCardUser = DataHelper.getDeclinedCardUser();
-
-        Response response = RestAssured.given()
-                .baseUri("http://localhost:8080")
-                .header("Content-Type", "application/json")
-                .body(declinedCardUser)
-                .post("/api/v1/pay")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-        // Извлекаем статус из ответа
-        String status = response.jsonPath().getString("status");
-
-        // Проверяем, что статус равен "DECLINED"
-        assertEquals("DECLINED", status, "Expected status to be 'APPROVED'");
+        // проверяем статусы апи и базы данных
+        assertAll("Checking DECLINED status from API and DB",
+                () -> assertEquals("DECLINED", DataHelper.getDeclinedStatus(),
+                        "Expected API status to be 'DECLINED'"),
+                () -> assertEquals("DECLINED", SqlHelper.getStatus(),
+                        "Expected DB status to be 'DECLINED'")
+        );
+        SqlHelper.cleanTransactions();
     }
 }

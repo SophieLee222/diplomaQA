@@ -1,9 +1,13 @@
 package ru.netology.web.data;
 
 import com.github.javafaker.Faker;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import lombok.Value;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Random;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,122 +23,71 @@ public class DataHelper {
         return new String("5555 6666 7777 8888");
     }
 
+    public static String getApprovedStatus() {
+        Response response = RestAssured.given()
+                .baseUri("http://localhost:8080")
+                .header("Content-Type", "application/json")
+                .body(getValidUser()) // Передаём изменённый JSON
+                .post("/api/v1/pay")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        // Извлекаем статус из ответа
+        String status = response.jsonPath().getString("status");
+        return status;
+    }
+
+    public static String getDeclinedStatus() {
+        Response response = RestAssured.given()
+                .baseUri("http://localhost:8080")
+                .header("Content-Type", "application/json")
+                .body(getDeclinedCardUser())
+                .post("/api/v1/pay")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        // Извлекаем статус из ответа
+        String status = response.jsonPath().getString("status");
+        return status;
+    }
+
     public static String generateInvalidCardNumber() {
-        Random random = new Random();
-
-        // Сгенерировать число цифр (от 1 до 15)
-        int numDigits = random.nextInt(15) + 1;
-
-        // Построить string из этих цифр
-        StringBuilder number = new StringBuilder();
-        for (int i = 0; i < numDigits; i++) {
-            int digit = random.nextInt(10); // Сгенерировать цифру (0-9)
-
-            number.append(digit);
-        }
-
-        return number.toString();
+        int invalidNumber = new Random().nextInt(1000000000) + 1;
+        return String.valueOf(invalidNumber);
     }
 
     //Месяц и Год: сначала нужна полностью валидная дата, далее истекший месяц, невалидный месяц, истекший год, невалидный год
 
-    public static int getCurrentYear() {
-        return YearMonth.now().getYear();
+    public static String generateValidMonth() {
+        String month = LocalDate.now().format(DateTimeFormatter.ofPattern("MM"));
+        return month;
     }
 
-    public static String getCurrentMonth() {
-        int currentMonth = YearMonth.now().getMonthValue();
-        return String.format("%02d", currentMonth);
-    }
-
-    // Метод для генерации валидного года
     public static String generateValidYear() {
-        Random random = new Random();
-
-        // Сгенерировать год в диапазоне от текущего до +5 лет
-        int fullYear = getCurrentYear() + random.nextInt(6); // Генерация года (от текущего до +5 лет)
-
-        // Извлечь последние две цифры с помощью % 100 и отформатировать
-        return String.format("%02d", fullYear % 100);
+        String year = LocalDate.now().format(DateTimeFormatter.ofPattern("yy"));
+        return year;
     }
 
-
-    public static String generateValidMonth(String year) {
-        Random random = new Random();
-
-        // Преобразуем строку year в int
-        int numericYear = Integer.parseInt(year);
-
-        // Преобразуем текущий месяц из строки в int
-        int currentMonth = Integer.parseInt(getCurrentMonth());
-        int month;
-
-        if (numericYear == getCurrentYear()) {
-            // Если год совпадает с текущим, выбрать текущий или будущий месяц
-            month = currentMonth + random.nextInt(13 - currentMonth); // (currentMonth..12)
-        } else {
-            // Если год не текущий, выбрать любой месяц (1..12)
-            month = random.nextInt(12) + 1;
-        }
-
-        // Возвращаем форматированное значение с ведущим нулём
-        return String.format("%02d", month);
-    }
-
-
-    // Метод для генерации истекшего месяца на основе текущего года
     public static String generateExpiredMonth() {
-        // Преобразуем текущий месяц из строки в int
-        int currentMonth = Integer.parseInt(getCurrentMonth());
-        int expiredMonth;
-
-        if (currentMonth == 1) {
-            // Если текущий месяц - январь, то истекший месяц - декабрь прошлого года
-            expiredMonth = 12;
-        } else {
-            // Для других месяцев просто вычитаем 1
-            expiredMonth = currentMonth - 1;
-        }
-
-        // Возвращаем результат в формате "MM" с ведущим нулём
-        return String.format("%02d", expiredMonth);
+        String month = LocalDate.now().minusMonths(1).format(DateTimeFormatter.ofPattern("MM"));
+        return month;
     }
 
-    //МЕНЯТЬ ГОД НА ПРОШЛЫЙ, ЕСЛИ СЕЙЧАС ЯНВАРЬ (для проверок на истекший месяц)
-    public static String getFalseOrTrueCurrentYear(String month) {
-        int yearToReturn;
-
-        // Проверяем, является ли месяц "01" (январь)
-        if (month.equals("01")) {
-            yearToReturn = getCurrentYear() - 1; // Прошлый год
-        } else {
-            yearToReturn = getCurrentYear(); // Текущий год
-        }
-
-        // Возвращаем последние две цифры года
-        return String.format("%02d", yearToReturn % 100);
-    }
-
-    // Метод для генерации невалидного месяца
     public static String generateInvalidMonth() {
-        Random random = new Random();
-        int invalidMonth = random.nextInt(87) + 13; // Генерация числа от 13 до 99
-        return String.valueOf(invalidMonth); // Преобразование числа в строку
+        int invalidMonth = new Random().nextInt(87) + 13; // Генерация числа от 13 до 99
+        return String.valueOf(invalidMonth);
     }
 
-    //Метод генерации истекшего года
     public static String generateExpiredYear() {
-        Random random = new Random();
-        int expiredYear = random.nextInt(getCurrentYear() - 2000) + 2000; // Случайный год от 2000 до (currentYear - 1)
-        return String.format("%02d", expiredYear % 100); // Преобразование в две последние цифры
+        String year = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yy"));
+        return year;
     }
 
-    // Метод для генерации невалидного года
     public static String generateInvalidYear() {
-        Random random = new Random();
-        int startYear = getCurrentYear() + 21; // Начинаем с +21 года
-        int invalidYear = random.nextInt(100 - (startYear % 100)) + (startYear % 100); // Генерируем в пределах текущего столетия
-        return String.valueOf(invalidYear); // Возвращаем только последние две цифры
+        String invalidYear = LocalDate.now().plusYears(6).format(DateTimeFormatter.ofPattern("yy"));
+        return invalidYear;
     }
 
     //Метод для герерации имени
@@ -147,53 +100,120 @@ public class DataHelper {
 
     // Метод генерации валидного CVC
     public static int generateValidCVC() {
-        Random random = new Random();
-        return random.nextInt(900) + 100; // Генерирует число от 100 до 999
+        String validCvc = new Faker().numerify("###");
+        return Integer.parseInt(validCvc);
     }
 
     // Метод генерации невалидного CVC
     public static int generateInvalidCVC() {
-        Random random = new Random();
-        return random.nextInt(90) + 10; // Генерирует число от 10 до 99
+        String invalidCvc = new Faker().numerify("##");
+        return Integer.parseInt(invalidCvc);
     }
 
     //валидный юзер
     public static CardInfo getValidUser() {
         String validYear = generateValidYear();
         return new CardInfo(getApprovedCardNumber(),
-                generateValidMonth(validYear), validYear,
+                generateValidMonth(), validYear,
                 generateOwnerName("en"), generateValidCVC());
     }
 
     //юзер с declined картой
     public static CardInfo getDeclinedCardUser() {
-        String validYear = generateValidYear();
         return new CardInfo(getDeclinedCardNumber(),
-                generateValidMonth(validYear), validYear,
+                generateValidMonth(), generateValidYear(),
                 generateOwnerName("en"), generateValidCVC());
     }
 
-    //создать юзера с полностью невалидными форматами данных
+    //юзер с невалидной картой
+    public static CardInfo getInvalidCardUser() {
+        return new CardInfo(generateInvalidCardNumber(),
+                generateValidMonth(), generateValidYear(),
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с невалидным месяцем
+    public static CardInfo getInvalidMonthUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateInvalidMonth(), generateValidYear(),
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с невалидным годом
+    public static CardInfo getInvalidYearUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(), generateInvalidYear(),
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с невалидным именем
+    public static CardInfo getInvalidOwnerUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(), generateValidYear(),
+                generateOwnerName("ru"), generateValidCVC());
+    }
+
+    //юзер с невалидным cvc
+    public static CardInfo getInvalidCvcUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(), generateValidYear(),
+                generateOwnerName("en"), generateInvalidCVC());
+    }
+
+    //юзер с полностью невалидными форматами данных
     public static CardInfo getInvalidInfoUser() {
         return new CardInfo(generateInvalidCardNumber(),
                 generateInvalidMonth(), generateInvalidYear(),
                 generateOwnerName("ru"), generateInvalidCVC());
     }
 
-    //создать юзера с истекшим месяцем
+    //юзер с истекшим месяцем
     public static CardInfo getExpiredMonthUser() {
-        String currentMonth = String.valueOf(getCurrentMonth());
         return new CardInfo(getApprovedCardNumber(),
-                generateExpiredMonth(), getFalseOrTrueCurrentYear(currentMonth),
+                generateExpiredMonth(), generateValidYear(),
                 generateOwnerName("en"), generateValidCVC());
     }
 
-    //создать юзера с истекшим годом
+    //юзер с истекшим годом
     public static CardInfo getExpiredYearUser() {
-        String validYear = generateValidYear();
         return new CardInfo(getApprovedCardNumber(),
-                generateValidMonth(validYear),generateExpiredYear() ,
+                generateValidMonth(),generateExpiredYear() ,
                 generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с пустым полем карты
+    public static CardInfo getEmptyCardUser() {
+        return new CardInfo("",
+                generateValidMonth(),generateValidYear() ,
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с пустым полем месяца
+    public static CardInfo getEmptyMonthUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                "",generateValidYear() ,
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с пустым полем года
+    public static CardInfo getEmptyYearUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(),"",
+                generateOwnerName("en"), generateValidCVC());
+    }
+
+    //юзер с пустым полем владельца
+    public static CardInfo getEmptyOwnerUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(),generateValidYear(),
+                "", generateValidCVC());
+    }
+
+    //юзер с пустым полем cvc
+    public static CardInfo getEmptyCvcUser() {
+        return new CardInfo(getApprovedCardNumber(),
+                generateValidMonth(),generateValidYear(),
+                generateOwnerName("en"), 0);
     }
 
     //дата класс для предоставления информации о карте и ее держателе

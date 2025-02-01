@@ -43,3 +43,11 @@ out/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+
+data/
+src/test/.DS_Store
+src/test/java/.DS_Store
+src/test/java/ru/.DS_Store
+src/test/java/ru/netology/.DS_Store
+src/test/java/ru/netology/web/.DS_Store
+src/test/java/ru/netology/web/page/.DS_Store

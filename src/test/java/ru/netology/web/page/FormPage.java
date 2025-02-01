@@ -57,7 +57,7 @@ public class FormPage {
     }
 
     //заполнить форму данными
-    private void fillForm(DataHelper.CardInfo cardInfo) {
+    public void fillForm(DataHelper.CardInfo cardInfo) {
         cardNumberField.setValue(cardInfo.getCardNumber());
         monthField.setValue(cardInfo.getMonth());
         yearField.setValue(cardInfo.getYear());
@@ -67,220 +67,78 @@ public class FormPage {
     }
 
     //проверить наличие уведомления об успехе операции
-    private void verifySuccessNotification() {
+    public void verifySuccessNotification() {
         successNotification.shouldBe(visible, Duration.ofSeconds(15))
                 .shouldHave(text("Операция одобрена Банком"));
     }
 
     //проверить наличие уведомления об ошибке
-    private void verifyErrorNotification() {
+    public void verifyErrorNotification() {
         errorNotification.shouldBe(visible, Duration.ofSeconds(15))
                 .shouldHave(text("Ошибка! Банк отказал в проведении операции."));
     }
 
-    // Заполнить форму валидными данными
-    public void sendValidForm() {
-        fillForm(DataHelper.getValidUser());
-        verifySuccessNotification();
-    }
-
-    //Метод проверки статуса через БД
-    public void checkResponseStatus() {
-
-    }
-
-    //заполнить форму declined картой + остальнами валидными данными
-    public void sendDeclinedCardForm() {
-        fillForm(DataHelper.getDeclinedCardUser());
-        verifyErrorNotification();
-    }
-
-    // Общий метод для проверки ошибок формы
-    private void fillFormAndCheckError(DataHelper.CardInfo cardInfo, SelenideElement errorElement, String expectedErrorText) {
-        fillForm(cardInfo);
-        if (errorElement.exists()) {
-            errorElement.shouldBe(visible).shouldHave(text(expectedErrorText));
-        } else {
-            throw new AssertionError("Ошибка для указанного поля не найдена.");
-        }
-    }
-
-// Используем общий метод для проверки всех полей
+    //Метод проверки статуса через БД ???
+//    public void checkResponseStatus() {
+//    }
 
     // Проверка невалидного формата карты
-    public void fillInvalidCardFormAndCheckError() {
-        DataHelper.CardInfo invalidUser = DataHelper.getInvalidInfoUser();
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        invalidUser.getCardNumber(),
-                        validUser.getMonth(),
-                        validUser.getYear(),
-                        validUser.getOwner(),
-                        validUser.getCvc()
-                ),
-                cardError,
-                "Неверный формат"
-        );
+    public void checkInvalidCardError() {
+        cardError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка невалидного формата месяца
-    public void fillInvalidMonthForm() {
-        DataHelper.CardInfo invalidUser = DataHelper.getInvalidInfoUser();
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        validUser.getCardNumber(),
-                        invalidUser.getMonth(),
-                        validUser.getYear(),
-                        validUser.getOwner(),
-                        validUser.getCvc()
-                ),
-                monthError,
-                "Неверно указан срок действия карты"
-        );
+    public void checkInvalidMonthError() {
+        monthError.shouldBe(visible).shouldHave(text("Неверно указан срок действия карты"));
     }
 
     // Проверка невалидного формата года
-    public void fillInvalidYearForm() {
-        DataHelper.CardInfo invalidUser = DataHelper.getInvalidInfoUser();
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        validUser.getCardNumber(),
-                        validUser.getMonth(),
-                        invalidUser.getYear(),
-                        validUser.getOwner(),
-                        validUser.getCvc()
-                ),
-                yearError,
-                "Неверно указан срок действия карты"
-        );
+    public void checkInvalidYearError() {
+        yearError.shouldBe(visible).shouldHave(text("Неверно указан срок действия карты"));
     }
 
     // Проверка невалидного формата владельца
-    public void fillInvalidOwnerForm() {
-        DataHelper.CardInfo invalidUser = DataHelper.getInvalidInfoUser();
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        validUser.getCardNumber(),
-                        validUser.getMonth(),
-                        validUser.getYear(),
-                        invalidUser.getOwner(),
-                        validUser.getCvc()
-                ),
-                ownerError,
-                "Неверный формат"
-        );
+    public void checkInvalidOwnerError() {
+        ownerError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка невалидного формата CVC
-    public void fillInvalidCvcForm() {
-        DataHelper.CardInfo invalidUser = DataHelper.getInvalidInfoUser();
-        DataHelper.CardInfo validUser = DataHelper.getValidUser();
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        validUser.getCardNumber(),
-                        validUser.getMonth(),
-                        validUser.getYear(),
-                        validUser.getOwner(),
-                        invalidUser.getCvc()
-                ),
-                cvcError,
-                "Неверный формат"
-        );
+    public void checkInvalidCvcError() {
+        cvcError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка формы с истёкшим месяцем
-    public void fillExpiredMonthFormAndCheckError() {
-        fillFormAndCheckError(
-                DataHelper.getExpiredMonthUser(),
-                monthError,
-                "Истёк срок действия карты"
-        );
+    public void checkExpiredMonthError() {
+        monthError.shouldBe(visible).shouldHave(text("Истёк срок действия карты"));
     }
 
     // Проверка формы с истёкшим годом
-    public void fillExpiredYearFormAndCheckError() {
-        fillFormAndCheckError(
-                DataHelper.getExpiredYearUser(),
-                yearError,
-                "Истёк срок действия карты"
-        );
+    public void checkExpiredYearError() {
+        yearError.shouldBe(visible).shouldHave(text("Истёк срок действия карты"));
     }
 
     // Проверка пустого поля номера карты
     public void checkEmptyCardNumberField() {
-        fillFormAndCheckError(
-                new DataHelper.CardInfo("", // Пустое поле
-                        DataHelper.getValidUser().getMonth(),
-                        DataHelper.getValidUser().getYear(),
-                        DataHelper.getValidUser().getOwner(),
-                        DataHelper.getValidUser().getCvc()
-                ),
-                cardError,
-                "Неверный формат"
-        );
+        cardError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка пустого поля месяца
     public void checkEmptyMonthField() {
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        DataHelper.getValidUser().getCardNumber(),
-                        "", // Пустое поле
-                        DataHelper.getValidUser().getYear(),
-                        DataHelper.getValidUser().getOwner(),
-                        DataHelper.getValidUser().getCvc()
-                ),
-                monthError,
-                "Неверный формат"
-        );
+        monthError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка пустого поля года
     public void checkEmptyYearField() {
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        DataHelper.getValidUser().getCardNumber(),
-                        DataHelper.getValidUser().getMonth(),
-                        "", // Пустое поле
-                        DataHelper.getValidUser().getOwner(),
-                        DataHelper.getValidUser().getCvc()
-                ),
-                yearError,
-                "Неверный формат"
-        );
+        yearError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 
     // Проверка пустого поля владельца карты
     public void checkEmptyOwnerField() {
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        DataHelper.getValidUser().getCardNumber(),
-                        DataHelper.getValidUser().getMonth(),
-                        DataHelper.getValidUser().getYear(),
-                        "", // Пустое поле
-                        DataHelper.getValidUser().getCvc()
-                ),
-                ownerError,
-                "Поле обязательно для заполнения"
-        );
+        ownerError.shouldBe(visible).shouldHave(text("Поле обязательно для заполнения"));
     }
 
     // Проверка пустого поля CVC
     public void checkEmptyCvcField() {
-        fillFormAndCheckError(
-                new DataHelper.CardInfo(
-                        DataHelper.getValidUser().getCardNumber(),
-                        DataHelper.getValidUser().getMonth(),
-                        DataHelper.getValidUser().getYear(),
-                        DataHelper.getValidUser().getOwner(),
-                        0 // Пустое поле
-                ),
-                cvcError,
-                "Неверный формат"
-        );
+        cvcError.shouldBe(visible).shouldHave(text("Неверный формат"));
     }
 }

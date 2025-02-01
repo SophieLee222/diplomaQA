@@ -11,8 +11,7 @@ import ru.netology.web.data.DataHelper;
 import ru.netology.web.data.SqlHelper;
 import ru.netology.web.page.FormPage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SendFormTest {
     private FormPage formPage;
@@ -36,127 +35,124 @@ public class SendFormTest {
     @Test
     @DisplayName("Should Send Valid Form and receive APPROVED status")
     void shouldSendValidFormAndGetApprovedStatus() {
-        var expectedStatus = "APPROVED";
-        String actualStatus;
-        boolean notificationCheckFailed = false;
+        formPage.fillForm(DataHelper.getValidUser());
 
-        try {
-            formPage.sendValidForm();
-        } catch (UIAssertionError e) {
-            notificationCheckFailed = true;
-            System.err.println("Уведомление об успехе операции не обнаружено: " + e.getMessage());
-        }
+        assertAll("Checking UI notification and DB status",
+                () -> formPage.verifySuccessNotification(), // Проверка уведомления
+                () -> assertEquals("APPROVED", SqlHelper.getStatus(),
+                        "Expected status to be 'APPROVED'")
+        );
 
-        // Проверка статуса из базы данных даже при отсутствии уведомления
-        actualStatus = SqlHelper.getStatus();
-        assertEquals(expectedStatus, actualStatus, "Expected status to be 'APPROVED'");
-
-        // Очистка транзакций
         SqlHelper.cleanTransactions();
-
-        // Если уведомление не найдено, явно провалить тест после проверки статуса
-        if (notificationCheckFailed) {
-            fail("Уведомление об успехе операции не было отображено, но статус операции в БД верный");
-        }
     }
-
 
     @Test
     @DisplayName("Should Display Declined Card Notification and receive DECLINED status")
     void shouldGetDeclinedCardNotificationAndDeclinedStatus() {
-        var expectedStatus = "DECLINED";
-        String actualStatus;
-        boolean notificationCheckFailed = false;
+        formPage.fillForm(DataHelper.getDeclinedCardUser());
 
-        try {
-            formPage.sendDeclinedCardForm();
-        } catch (UIAssertionError e) {
-            notificationCheckFailed = true;
-            System.err.println("Уведомление об ошибке операции не обнаружено: " + e.getMessage());
-        }
+        assertAll("Checking UI notification and DB status",
+                () -> formPage.verifyErrorNotification(), // Проверка уведомления
+                () -> assertEquals("DECLINED", SqlHelper.getStatus(),
+                        "Expected status to be 'DECLINED'")
+        );
 
-        // Проверка статуса из базы данных даже при отсутствии уведомления
-        actualStatus = SqlHelper.getStatus();
-        assertEquals(expectedStatus, actualStatus, "Expected status to be 'DECLINED'");
-
-        // Очистка транзакций
         SqlHelper.cleanTransactions();
-
-        // Если уведомление не найдено, явно провалить тест после проверки статуса
-        if (notificationCheckFailed) {
-            fail("Уведомление об ошибке операции не было отображено, но статус операции в БД верный");
-        }
     }
 
     @Test
     @DisplayName("Should Display Wrong Card Format Error")
     void shouldGetWrongCardFormatError() {
-        formPage.fillInvalidCardFormAndCheckError();
+        DataHelper.CardInfo invalidCardUser = DataHelper.getInvalidCardUser();
+        formPage.fillForm(invalidCardUser);
+        formPage.checkInvalidCardError();
     }
 
     @Test
     @DisplayName("Should Display Wrong Month Format Error")
     void shouldGetWrongMonthFormatError() {
-        formPage.fillInvalidMonthForm();
+        DataHelper.CardInfo invalidMonthUser = DataHelper.getInvalidMonthUser();
+        formPage.fillForm(invalidMonthUser);
+        formPage.checkInvalidMonthError();
     }
 
     @Test
     @DisplayName("Should Display Wrong Year Format Error")
     void shouldGetWrongYearFormatError() {
-        formPage.fillInvalidYearForm();
+        DataHelper.CardInfo invalidYearUser = DataHelper.getInvalidYearUser();
+        formPage.fillForm(invalidYearUser);
+        formPage.checkInvalidYearError();
     }
 
     @Test
     @DisplayName("Should Display Wrong Owner Format Error")
     void shouldGetWrongOwnerFormatError() {
-        formPage.fillInvalidOwnerForm();
+        DataHelper.CardInfo invalidOwnerUser = DataHelper.getInvalidOwnerUser();
+        formPage.fillForm(invalidOwnerUser);
+        formPage.checkInvalidOwnerError();
     }
 
     @Test
     @DisplayName("Should Display Wrong CVC Format Error")
     void shouldGetWrongCvcFormatError() {
-        formPage.fillInvalidCvcForm();
+        DataHelper.CardInfo invalidCvcUser = DataHelper.getInvalidCvcUser();
+        formPage.fillForm(invalidCvcUser);
+        formPage.checkInvalidCvcError();
     }
 
     @Test
     @DisplayName("Should Display Expired Month Error")
     void shouldGetExpiredMonthError() {
-        formPage.fillExpiredMonthFormAndCheckError();
+        DataHelper.CardInfo expiredMonthUser = DataHelper.getExpiredMonthUser();
+        formPage.fillForm(expiredMonthUser);
+        formPage.checkExpiredMonthError();
     }
 
     @Test
     @DisplayName("Should Display Expired Year Error")
     void shouldGetExpiredYearError() {
-        formPage.fillExpiredYearFormAndCheckError();
+        DataHelper.CardInfo expiredYearUser = DataHelper.getExpiredYearUser();
+        formPage.fillForm(expiredYearUser);
+        formPage.checkExpiredYearError();
     }
 
     @Test
     @DisplayName("Should Display Empty Card Number Error")
     void shouldDisplayEmptyCardNumberError() {
+        DataHelper.CardInfo emptyCardUser = DataHelper.getEmptyCardUser();
+        formPage.fillForm(emptyCardUser);
         formPage.checkEmptyCardNumberField();
     }
 
     @Test
     @DisplayName("Should Display Empty Month Error")
     void shouldDisplayEmptyMonthError() {
+        DataHelper.CardInfo emptyMonthUser = DataHelper.getEmptyMonthUser();
+        formPage.fillForm(emptyMonthUser);
         formPage.checkEmptyMonthField();
     }
 
     @Test
     @DisplayName("Should Display Empty Year Error")
     void shouldDisplayEmptyYearError() {
+        DataHelper.CardInfo emptyYearUser = DataHelper.getEmptyYearUser();
+        formPage.fillForm(emptyYearUser);
         formPage.checkEmptyYearField();
     }
 
     @Test
     @DisplayName("Should Display Empty Owner Error")
     void shouldDisplayEmptyOwnerError() {
+        DataHelper.CardInfo emptyOwnerUser = DataHelper.getEmptyOwnerUser();
+        formPage.fillForm(emptyOwnerUser);
         formPage.checkEmptyOwnerField();
     }
 
     @Test
     @DisplayName("Should Display Empty CVC Error")
     void shouldDisplayEmptyCvcError() {
+        DataHelper.CardInfo emptyCvcUser = DataHelper.getEmptyCvcUser();
+        formPage.fillForm(emptyCvcUser);
         formPage.checkEmptyCvcField();
     }
 }
