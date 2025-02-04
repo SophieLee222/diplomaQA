@@ -65,7 +65,7 @@ public class SendFormTest {
     void shouldGetWrongCardFormatError() {
         DataHelper.CardInfo invalidCardUser = DataHelper.getInvalidCardUser();
         formPage.fillForm(invalidCardUser);
-        formPage.checkInvalidCardError();
+        formPage.checkCardFieldError("Неверный формат");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SendFormTest {
     void shouldGetWrongMonthFormatError() {
         DataHelper.CardInfo invalidMonthUser = DataHelper.getInvalidMonthUser();
         formPage.fillForm(invalidMonthUser);
-        formPage.checkInvalidMonthError();
+        formPage.checkMonthFieldError("Неверно указан срок действия карты");
     }
 
     @Test
@@ -81,7 +81,7 @@ public class SendFormTest {
     void shouldGetWrongYearFormatError() {
         DataHelper.CardInfo invalidYearUser = DataHelper.getInvalidYearUser();
         formPage.fillForm(invalidYearUser);
-        formPage.checkInvalidYearError();
+        formPage.checkYearFieldError("Неверно указан срок действия карты");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class SendFormTest {
     void shouldGetWrongOwnerFormatError() {
         DataHelper.CardInfo invalidOwnerUser = DataHelper.getInvalidOwnerUser();
         formPage.fillForm(invalidOwnerUser);
-        formPage.checkInvalidOwnerError();
+        formPage.checkOwnerFieldError("Неверный формат");
     }
 
     @Test
@@ -97,7 +97,7 @@ public class SendFormTest {
     void shouldGetWrongCvcFormatError() {
         DataHelper.CardInfo invalidCvcUser = DataHelper.getInvalidCvcUser();
         formPage.fillForm(invalidCvcUser);
-        formPage.checkInvalidCvcError();
+        formPage.checkCvcFieldError("Неверный формат");
     }
 
     @Test
@@ -105,7 +105,7 @@ public class SendFormTest {
     void shouldGetExpiredMonthError() {
         DataHelper.CardInfo expiredMonthUser = DataHelper.getExpiredMonthUser();
         formPage.fillForm(expiredMonthUser);
-        formPage.checkExpiredMonthError();
+        formPage.checkMonthFieldError("Истёк срок действия карты");
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SendFormTest {
     void shouldGetExpiredYearError() {
         DataHelper.CardInfo expiredYearUser = DataHelper.getExpiredYearUser();
         formPage.fillForm(expiredYearUser);
-        formPage.checkExpiredYearError();
+        formPage.checkYearFieldError("Истёк срок действия карты");
     }
 
     @Test
@@ -121,7 +121,7 @@ public class SendFormTest {
     void shouldDisplayEmptyCardNumberError() {
         DataHelper.CardInfo emptyCardUser = DataHelper.getEmptyCardUser();
         formPage.fillForm(emptyCardUser);
-        formPage.checkEmptyCardNumberField();
+        formPage.checkCardFieldError("Неверный формат");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SendFormTest {
     void shouldDisplayEmptyMonthError() {
         DataHelper.CardInfo emptyMonthUser = DataHelper.getEmptyMonthUser();
         formPage.fillForm(emptyMonthUser);
-        formPage.checkEmptyMonthField();
+        formPage.checkMonthFieldError("Неверный формат");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class SendFormTest {
     void shouldDisplayEmptyYearError() {
         DataHelper.CardInfo emptyYearUser = DataHelper.getEmptyYearUser();
         formPage.fillForm(emptyYearUser);
-        formPage.checkEmptyYearField();
+        formPage.checkYearFieldError("Неверный формат");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SendFormTest {
     void shouldDisplayEmptyOwnerError() {
         DataHelper.CardInfo emptyOwnerUser = DataHelper.getEmptyOwnerUser();
         formPage.fillForm(emptyOwnerUser);
-        formPage.checkEmptyOwnerField();
+        formPage.checkOwnerFieldError("Поле обязательно для заполнения");
     }
 
     @Test
@@ -153,6 +153,6 @@ public class SendFormTest {
     void shouldDisplayEmptyCvcError() {
         DataHelper.CardInfo emptyCvcUser = DataHelper.getEmptyCvcUser();
         formPage.fillForm(emptyCvcUser);
-        formPage.checkEmptyCvcField();
+        formPage.checkCvcFieldError("Неверный формат");
     }
 }

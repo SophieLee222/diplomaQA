@@ -32,7 +32,7 @@ public class SendFormApiTest {
     void shouldGetApprovedStatus() {
         // проверяем статусы апи и базы данных
         assertAll("Checking APPROVED status from API and DB",
-                () -> assertEquals("APPROVED", DataHelper.getApprovedStatus(),
+                () -> assertEquals("APPROVED", DataHelper.getResponseStatus(DataHelper.getValidUser()),
                         "Expected API status to be 'APPROVED'"),
                 () -> assertEquals("APPROVED", SqlHelper.getStatus(),
                         "Expected DB status to be 'APPROVED'")
@@ -40,13 +40,12 @@ public class SendFormApiTest {
         SqlHelper.cleanTransactions();
     }
 
-
     @Test
     @DisplayName("Should receive DECLINED status")
     void shouldGetDeclinedStatus() {
         // проверяем статусы апи и базы данных
         assertAll("Checking DECLINED status from API and DB",
-                () -> assertEquals("DECLINED", DataHelper.getDeclinedStatus(),
+                () -> assertEquals("DECLINED", DataHelper.getResponseStatus(DataHelper.getDeclinedCardUser()),
                         "Expected API status to be 'DECLINED'"),
                 () -> assertEquals("DECLINED", SqlHelper.getStatus(),
                         "Expected DB status to be 'DECLINED'")

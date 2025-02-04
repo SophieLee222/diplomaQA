@@ -23,26 +23,11 @@ public class DataHelper {
         return new String("5555 6666 7777 8888");
     }
 
-    public static String getApprovedStatus() {
+    public static String getResponseStatus(DataHelper.CardInfo user) {
         Response response = RestAssured.given()
                 .baseUri("http://localhost:8080")
                 .header("Content-Type", "application/json")
-                .body(getValidUser()) // Передаём изменённый JSON
-                .post("/api/v1/pay")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-        // Извлекаем статус из ответа
-        String status = response.jsonPath().getString("status");
-        return status;
-    }
-
-    public static String getDeclinedStatus() {
-        Response response = RestAssured.given()
-                .baseUri("http://localhost:8080")
-                .header("Content-Type", "application/json")
-                .body(getDeclinedCardUser())
+                .body(user) // Передаём изменённый JSON
                 .post("/api/v1/pay")
                 .then()
                 .statusCode(200)

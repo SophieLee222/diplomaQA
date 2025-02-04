@@ -22,7 +22,7 @@ public class FormPage {
             .parent().parent().$("input.input__control");
     private final SelenideElement ownerField = $$("span").findBy(text("Владелец")).$("input");
     private final SelenideElement cvcField = $$("span.input__top").findBy(text("CVC/CVV"))
-        .parent().parent().$("input.input__control");
+            .parent().parent().$("input.input__control");
 
     //кнопка отправки формы
     private final SelenideElement continueButton = $$("button").findBy(text("Продолжить"));
@@ -78,67 +78,25 @@ public class FormPage {
                 .shouldHave(text("Ошибка! Банк отказал в проведении операции."));
     }
 
-    //Метод проверки статуса через БД ???
-//    public void checkResponseStatus() {
-//    }
+    // Проверка текстов ошибок полей
 
-    // Проверка невалидного формата карты
-    public void checkInvalidCardError() {
-        cardError.shouldBe(visible).shouldHave(text("Неверный формат"));
+    public void checkCardFieldError(String expectedErrorText) {
+        cardError.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 
-    // Проверка невалидного формата месяца
-    public void checkInvalidMonthError() {
-        monthError.shouldBe(visible).shouldHave(text("Неверно указан срок действия карты"));
+    public void checkMonthFieldError(String expectedErrorText) {
+        monthError.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 
-    // Проверка невалидного формата года
-    public void checkInvalidYearError() {
-        yearError.shouldBe(visible).shouldHave(text("Неверно указан срок действия карты"));
+    public void checkYearFieldError(String expectedErrorText) {
+        yearError.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 
-    // Проверка невалидного формата владельца
-    public void checkInvalidOwnerError() {
-        ownerError.shouldBe(visible).shouldHave(text("Неверный формат"));
+    public void checkOwnerFieldError(String expectedErrorText) {
+        ownerError.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 
-    // Проверка невалидного формата CVC
-    public void checkInvalidCvcError() {
-        cvcError.shouldBe(visible).shouldHave(text("Неверный формат"));
-    }
-
-    // Проверка формы с истёкшим месяцем
-    public void checkExpiredMonthError() {
-        monthError.shouldBe(visible).shouldHave(text("Истёк срок действия карты"));
-    }
-
-    // Проверка формы с истёкшим годом
-    public void checkExpiredYearError() {
-        yearError.shouldBe(visible).shouldHave(text("Истёк срок действия карты"));
-    }
-
-    // Проверка пустого поля номера карты
-    public void checkEmptyCardNumberField() {
-        cardError.shouldBe(visible).shouldHave(text("Неверный формат"));
-    }
-
-    // Проверка пустого поля месяца
-    public void checkEmptyMonthField() {
-        monthError.shouldBe(visible).shouldHave(text("Неверный формат"));
-    }
-
-    // Проверка пустого поля года
-    public void checkEmptyYearField() {
-        yearError.shouldBe(visible).shouldHave(text("Неверный формат"));
-    }
-
-    // Проверка пустого поля владельца карты
-    public void checkEmptyOwnerField() {
-        ownerError.shouldBe(visible).shouldHave(text("Поле обязательно для заполнения"));
-    }
-
-    // Проверка пустого поля CVC
-    public void checkEmptyCvcField() {
-        cvcError.shouldBe(visible).shouldHave(text("Неверный формат"));
+    public void checkCvcFieldError(String expectedErrorText) {
+        cvcError.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 }
